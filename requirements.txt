@@ -1,0 +1,6 @@
+pydantic
+flake8
+mypy
+wget
+simple-term-menu
+blessed
