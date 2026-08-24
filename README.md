@@ -157,7 +157,6 @@ capacity of 1.
 ### References
 
 * **Graph Theory & Pathfinding:** [Red Blob Games - Introduction to A* and Pathfinding](https://www.redblobgames.com/pathfinding/a-star/introduction.html)
-* **Yen's Algorithm for K-Shortest Paths:** Network path diversity strategies for flow routing.
 * **Python Type Hints & Static Analysis:** [Mypy Documentation](https://mypy.readthedocs.io/)
 * **PEP 8 Style Guide for Python:** [Python Software Foundation](https://peps.python.org/pep-0008/)
 
