@@ -12,10 +12,8 @@ from src.parser.exceptions import (
 
 
 class MapParser:
-    """Clase encargada de parsear un archivo de mapa."""
 
     def __init__(self, filepath: str) -> None:
-        """Inicializa el parser con la ruta del archivo."""
         self.filepath: str = filepath
         self.nb_drones: int = 0
         self.zones: Dict[str, Zone] = {}
@@ -50,28 +48,28 @@ class MapParser:
         tokens = base.replace(':', ' ').split()
         if len(tokens) < 4:
             raise InvalidMapSyntaxError(
-                "Definición de zona incompleta.", line_num, line
+                "Definition of an incomplete zone.", line_num, line
             )
 
         prefix, name = tokens[0], tokens[1]
 
         if '-' in name:
             raise InvalidMapSyntaxError(
-                "Los nombres de zona no pueden contener guiones.",
+                "Zone names cannot contain hyphens.",
                 line_num,
                 line
             )
 
         if name in self.zones:
             raise InvalidMapSyntaxError(
-                f"La zona '{name}' ya está definida.", line_num, line
+                f"The ‘{name}’ zone is already defined.", line_num, line
             )
 
         try:
             x, y = int(tokens[2]), int(tokens[3])
         except ValueError:
             raise InvalidCoordinateError(
-                f"Coordenadas inválidas para '{name}'.", line_num, line
+                f"Invalid coordinates for '{name}'.", line_num, line
             )
 
         meta = self._parse_metadata(meta_str)
@@ -79,7 +77,7 @@ class MapParser:
 
         if zone_type not in self.VALID_ZONE_TYPES:
             raise InvalidZoneTypeError(
-                f"Tipo de zona '{zone_type}' no permitido.",
+                f"Zone type '{zone_type}' not allowed.",
                 line_num,
                 line
             )
@@ -91,7 +89,7 @@ class MapParser:
                 raise ValueError()
         except ValueError:
             raise InvalidMapSyntaxError(
-                "max_drones debe ser un entero positivo.",
+                "max_drones must be a positive.",
                 line_num,
                 line
             )
@@ -107,14 +105,14 @@ class MapParser:
         if is_start:
             if self.start_hub:
                 raise InvalidMapSyntaxError(
-                    "No puede haber más de un start_hub.", line_num, line
+                    "There cannot be more than one start_hub.", line_num, line
                 )
             self.start_hub = new_zone
 
         if is_end:
             if self.end_hub:
                 raise InvalidMapSyntaxError(
-                    "No puede haber más de un end_hub.", line_num, line
+                    "There cannot be more than one end_hub.", line_num, line
                 )
             self.end_hub = new_zone
 
@@ -129,13 +127,13 @@ class MapParser:
         tokens = base.replace(':', ' ').split()
         if len(tokens) < 2:
             raise InvalidMapSyntaxError(
-                "Conexión incompleta.", line_num, line
+                "Incomplete connection.", line_num, line
             )
 
         link_str = tokens[1]
         if '-' not in link_str:
             raise InvalidMapSyntaxError(
-                "Formato de conexión inválido (falta el guion).",
+                "Invalid connection format (missing '-').",
                 line_num,
                 line
             )
@@ -144,7 +142,7 @@ class MapParser:
 
         if z1_name not in self.zones or z2_name not in self.zones:
             raise InvalidMapSyntaxError(
-                "Conexión a una zona no definida.", line_num, line
+                "Connection to an Undefined Zone.", line_num, line
             )
 
         for conn in self.connections:
@@ -153,7 +151,7 @@ class MapParser:
                 or (conn.zone1.name == z2_name and conn.zone2.name == z1_name)
             ):
                 raise DuplicateConnectionError(
-                    f"Conexión duplicada: {link_str}", line_num, line
+                    f"Duplicate connection: {link_str}", line_num, line
                 )
 
         meta = self._parse_metadata(meta_str)
@@ -163,7 +161,7 @@ class MapParser:
                 raise ValueError()
         except ValueError:
             raise InvalidMapSyntaxError(
-                "max_link_capacity debe ser entero positivo.",
+                "max_link_capacity must be a positive.",
                 line_num,
                 line
             )
@@ -174,13 +172,13 @@ class MapParser:
         self.connections.append(new_connection)
 
     def parse(self) -> Tuple[int, Dict[str, Zone], List[Connection]]:
-        """Función principal que lee el archivo y devuelve los datos."""
+        """Función principal."""
         try:
             with open(self.filepath, 'r') as file:
                 lines = file.readlines()
         except FileNotFoundError:
             raise MapParserError(
-                f"No se pudo encontrar el archivo: {self.filepath}"
+                f"The file could not be found: {self.filepath}"
             )
 
         found_nb_drones = False
@@ -188,15 +186,13 @@ class MapParser:
         for i, raw_line in enumerate(lines, start=1):
             line = raw_line.strip()
 
-            # Ignorar comentarios y líneas en blanco
             if not line or line.startswith('#'):
                 continue
 
-            # La primera línea válida debe ser nb_drones
             if not found_nb_drones:
                 if not line.startswith("nb_drones:"):
                     raise InvalidMapSyntaxError(
-                        "La primera instrucción debe ser 'nb_drones: <num>'.",
+                        "The first instruction should be 'nb_drones: <num>'.",
                         i,
                         line
                     )
@@ -206,14 +202,13 @@ class MapParser:
                         raise ValueError()
                 except ValueError:
                     raise InvalidMapSyntaxError(
-                        "nb_drones debe ser un número entero positivo.",
+                        "nb_drones must be a positive.",
                         i,
                         line
                     )
                 found_nb_drones = True
                 continue
 
-            # Procesamiento de zonas y conexiones
             if (
                 line.startswith("start_hub:")
                 or line.startswith("end_hub:")
@@ -224,15 +219,15 @@ class MapParser:
                 self._parse_connection(line, i)
             else:
                 raise InvalidMapSyntaxError(
-                    "Prefijo desconocido.", i, line
+                    "Unknown prefix.", i, line
                 )
 
         if not found_nb_drones:
-            raise MapParserError("Falta la instrucción 'nb_drones'")
+            raise MapParserError("Instruction is missing 'nb_drones'")
 
         if not self.start_hub or not self.end_hub:
             raise MissingHubError(
-                "El mapa debe contener exactamente un start_hub y un end_hub."
+                "The map must contain exactly one start_hub and one end_hub."
             )
 
         return self.nb_drones, self.zones, self.connections

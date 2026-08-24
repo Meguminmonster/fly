@@ -9,10 +9,10 @@
 #    Updated: 2026/08/05 16:47:09 by jpedra-v         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-PYTHON = python3
-PIP = pip
-MAIN = main.py
-SRC_DIR = src
+
+export UV_CACHE_DIR := /sgoinfre/students/jpedra-v/uv_cache
+export UV_PROJECT_ENVIRONMENT := /sgoinfre/students/jpedra-v/uv_envs/callme_venv
+export HF_HOME := /sgoinfre/students/jpedra-v/hf_cache
 
 .PHONY: install lint clean fclean run debug
 

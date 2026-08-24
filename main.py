@@ -8,7 +8,6 @@ from src.visualization import Visualizer
 
 
 def list_available_maps(maps_dir: str = "maps") -> List[str]:
-    """Obtiene la lista de mapas .txt buscando en subcarpetas."""
     map_files: List[str] = []
     if not os.path.exists(maps_dir) or not os.path.isdir(maps_dir):
         return map_files
@@ -24,23 +23,22 @@ def list_available_maps(maps_dir: str = "maps") -> List[str]:
 
 
 def select_map_interactively(maps_dir: str = "maps") -> Optional[str]:
-    """Muestra un menú para seleccionar un mapa de forma interactiva."""
     maps = list_available_maps(maps_dir)
     if not maps:
-        print(f"Error: No se encontraron archivos .txt en '{maps_dir}'.")
+        print(f"Error: No .txt files were found in '{maps_dir}'.")
         return None
 
-    print(f"--- Mapas disponibles en '{maps_dir}' ---")
+    print(f"--- Maps available at '{maps_dir}' ---")
     for idx, map_file in enumerate(maps, 1):
         print(f"  [{idx:>2}] {map_file}")
     print("----------------------------------------")
 
     while True:
         try:
-            prompt = f"Seleccione un mapa (1-{len(maps)}) o 'q' para salir: "
+            prompt = f"Select a map (1-{len(maps)}) or 'q' to cancel: "
             user_input = input(prompt).strip()
         except (KeyboardInterrupt, EOFError):
-            print("\nOperación cancelada.")
+            print("\nOperation canceled.")
             return None
 
         if user_input.lower() == 'q':
@@ -51,11 +49,10 @@ def select_map_interactively(maps_dir: str = "maps") -> Optional[str]:
             if 1 <= choice <= len(maps):
                 return os.path.join(maps_dir, maps[choice - 1])
 
-        print("Selección no válida. Intente de nuevo.")
+        print("Invalid selection. Please try again.")
 
 
 def get_map_path() -> Optional[str]:
-    """Obtiene la ruta del mapa desde los argumentos o de forma interactiva."""
     if len(sys.argv) >= 2:
         return sys.argv[1]
     return select_map_interactively()
@@ -72,7 +69,7 @@ def main() -> None:
         nb_drones, zones, connections = parser.parse()
 
         if not parser.start_hub or not parser.end_hub:
-            print("Error: El mapa no define start_hub o end_hub.")
+            print("Error: The map does not define start_hub or end_hub.")
             sys.exit(1)
 
         network = Network(
@@ -90,14 +87,14 @@ def main() -> None:
         if total_turns > 0:
             visualizer.print_simulation_end(total_turns)
         else:
-            print("Error: No se pudo completar la simulación.")
+            print("Error: The simulation could not be completed.")
             sys.exit(1)
 
     except MapParserError as e:
-        print(f"Error de parseo: {e}")
+        print(f"Parsing error: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"Error inesperado durante la ejecución: {e}")
+        print(f"Unexpected error during executionn: {e}")
         sys.exit(1)
 
 

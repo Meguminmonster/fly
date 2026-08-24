@@ -11,13 +11,13 @@ class MapParserError(Exception):
         self.line_number: int = line_number
         self.line_content: str = line_content
 
-        full_message = "Error de Parseo"
+        full_message = "Parsing Error"
         if line_number > 0:
-            full_message += f" en la línea {line_number}"
+            full_message += f" on line {line_number}"
         full_message += f": {message}"
 
         if line_content:
-            full_message += f"\n -> Contenido: '{line_content}'"
+            full_message += f"\n -> Content: '{line_content}'"
 
         super().__init__(full_message)
 

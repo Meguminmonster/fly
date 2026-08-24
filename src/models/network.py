@@ -4,7 +4,6 @@ from src.models.zone import Zone
 
 
 class Network:
-    """Contiene la estructura completa de la red de transporte."""
 
     def __init__(
         self,
@@ -13,14 +12,12 @@ class Network:
         start_hub: Zone,
         end_hub: Zone
     ) -> None:
-        """Inicializa la red del grafo con sus nodos y conexiones."""
         self.zones: Dict[str, Zone] = zones
         self.connections: List[Connection] = connections
         self.start_hub: Zone = start_hub
         self.end_hub: Zone = end_hub
 
     def get_neighbors(self, zone: Zone) -> List[Zone]:
-        """Devuelve todas las zonas adyacentes no bloqueadas."""
         neighbors: List[Zone] = []
         for conn in self.connections:
             dest = conn.get_destination(zone)
@@ -31,7 +28,6 @@ class Network:
     def get_connection(
         self, zone1: Zone, zone2: Zone
     ) -> Optional[Connection]:
-        """Obtiene la conexión existente entre dos zonas si esta existe."""
         for conn in self.connections:
             if (
                 (conn.zone1.name == zone1.name and

@@ -2,7 +2,6 @@ from typing import Union
 
 
 class Zone:
-    """Representa un hub o nodo en la red de movimiento de drones."""
 
     def __init__(
         self,
@@ -15,12 +14,11 @@ class Zone:
         is_start: bool = False,
         is_end: bool = False,
     ) -> None:
-        """Inicializa una zona con sus propiedades y restricciones."""
         self.name: str = name
         self.x: int = x
         self.y: int = y
         self.zone_type: str = zone_type
-        self.color: str = color
+        # self.color: str = color
         self.is_start: bool = is_start
         self.is_end: bool = is_end
 
@@ -30,7 +28,6 @@ class Zone:
         self.current_drones_count: int = 0
 
     def can_enter(self) -> bool:
-        """Comprueba si un dron puede ingresar a esta zona."""
         if self.zone_type == "blocked":
             return False
         return self.current_drones_count < self.max_drones

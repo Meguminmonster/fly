@@ -7,7 +7,6 @@ class SimulationEngine:
     """Gestor del ciclo de vida y la ejecución de la simulación."""
 
     def __init__(self, network: Network, drones: List[Drone]) -> None:
-        """Inicializa el motor de simulación."""
         self.network: Network = network
         self.drones: List[Drone] = drones
         self.pathfinder: PathFinder = PathFinder(network)
@@ -16,22 +15,27 @@ class SimulationEngine:
         self.route_indices: Dict[int, int] = {}
 
     def setup(self) -> bool:
-        """Calcula las rutas iniciales para todos los drones."""
-        path = self.pathfinder.find_shortest_path(
+        available_paths = self.pathfinder.find_multiple_paths(
             self.network.start_hub, self.network.end_hub
         )
-        if not path:
+        if not available_paths:
             return False
 
+        # Asignación balanceada de drones a las rutas encontradas
+        path_loads = [0] * len(available_paths)
         for drone in self.drones:
-            self.routes[drone.id] = path
+            best_path_idx = min(
+                range(len(available_paths)),
+                key=lambda i: len(available_paths[i]) + path_loads[i],
+            )
+            self.routes[drone.id] = available_paths[best_path_idx]
             self.route_indices[drone.id] = 0
+            path_loads[best_path_idx] += 1
 
         self.network.start_hub.current_drones_count = len(self.drones)
         return True
 
     def _get_next_zone(self, drone: Drone) -> Optional[Zone]:
-        """Devuelve la siguiente zona en la ruta de un dron."""
         route = self.routes.get(drone.id, [])
         idx = self.route_indices.get(drone.id, 0)
         if idx + 1 < len(route):
@@ -39,9 +43,8 @@ class SimulationEngine:
         return None
 
     def run(self) -> int:
-        """Ejecuta el bucle de simulación turno por turno."""
         if not self.setup():
-            print("Error: No existe ruta entre start_hub y end_hub.")
+            print("Error: There is no route between start_hub and end_hub.")
             return 0
 
         turn = 0
@@ -60,6 +63,7 @@ class SimulationEngine:
                 if drone.is_delivered:
                     continue
 
+                # 1. Procesar segundo turno en zona restricted
                 if drone.in_transit:
                     drone.turns_remaining_in_transit -= 1
                     if drone.turns_remaining_in_transit == 0:
@@ -67,11 +71,16 @@ class SimulationEngine:
                         if drone.destination_zone:
                             drone.current_zone = drone.destination_zone
                             drone.destination_zone = None
+
                             moves_this_turn.append(
                                 f"{drone.name}-{drone.current_zone.name}"
                             )
+
+                            if drone.current_zone == self.network.end_hub:
+                                drone.is_delivered = True
                     continue
 
+                # 2. Intentar nuevo avance
                 next_zone = self._get_next_zone(drone)
                 if not next_zone:
                     continue
@@ -79,7 +88,6 @@ class SimulationEngine:
                 conn = self.network.get_connection(
                     drone.current_zone, next_zone
                 )
-
                 if conn is None:
                     continue
 
@@ -90,23 +98,34 @@ class SimulationEngine:
                     next_zone.can_enter()
                     and current_link_usage < conn.max_link_capacity
                 ):
-                    drone.current_zone.current_drones_count -= 1
+                    origin_zone = drone.current_zone
+                    origin_zone.current_drones_count -= 1
                     link_capacity_used[conn_key] = current_link_usage + 1
                     self.route_indices[drone.id] += 1
 
                     if next_zone.zone_type == "restricted":
+                        # Turno 1 en zona restricted
                         drone.in_transit = True
                         drone.destination_zone = next_zone
                         drone.turns_remaining_in_transit = 1
                         next_zone.current_drones_count += 1
+
+                        moves_this_turn.append(
+                            f"{drone.name}-{origin_zone.name}-{next_zone.name}"
+                        )
                     else:
+                        # Zona normal o priority
                         drone.current_zone = next_zone
                         next_zone.current_drones_count += 1
+
                         moves_this_turn.append(
                             f"{drone.name}-{drone.current_zone.name}"
                         )
 
+                        if drone.current_zone == self.network.end_hub:
+                            drone.is_delivered = True
+
             if moves_this_turn:
-                print(f"Turn {turn}: " + " ".join(moves_this_turn))
+                print(" ".join(moves_this_turn))
 
         return turn
