@@ -14,7 +14,8 @@ allowed simultaneously), except for the start and end hubs which have infinite c
 - **Zone Types:**
   - `normal`: Standard zone with instant traversal (1 turn).
   - `priority`: Higher priority routing zones.
-  - `restricted`: Special traversal zones requiring **2 full turns** to pass through.
+  - `restricted`: Special traversal zones requiring 2 full turns to pass through.
+  - `blocked`: Obviously they're blocked.
 
 ---
 
@@ -32,7 +33,7 @@ make run
 
 ```
 
-Or execute the main script directly with a specific map file:
+Or:
 ```bash
 ./venv/bin/python3 main.py maps/easy/01_linear_path.txt
 
@@ -64,7 +65,7 @@ make fclean
 The network is modeled using clean Object-Oriented Programming (OOP) principles:
 
 * **`Zone`**: Represents nodes with coordinates, capacity limits, current occupancy, and type
-(`normal`, `priority`, `restricted`).
+(`normal`, `priority`, `restricted`, `blocked`).
 
 * **`Connection`**: Represents bidirectional edges with specific throughput capacities.
 
@@ -79,8 +80,8 @@ state flags.
 Rather than sending all drones down a single shortest path (which creates severe bottlenecks at 
 capacity-constrained nodes), the pathfinding algorithm (`PathFinder`):
 
-1. **Finds Multiple Paths:** Uses graph traversal (BFS / Yen's K-Shortest Paths variant) to discover 
-alternative, non-conflicting paths between `start_hub` and `end_hub`.
+1. **Finds Multiple Paths:** Uses graph traversal to discover alternative, non-conflicting paths 
+between `start_hub` and `end_hub`.
 
 2. **Dynamic Load Balancing:** Assigns drones across available paths during the setup phase by 
 calculating estimated traversal times based on path length and current drone queues.
@@ -101,16 +102,11 @@ moves.
 
 ## Visual
 
-* **Interactive Terminal UI:** When launched without CLI arguments (`make run`), it presents a menu 
+* **Interactive Terminal UI:** When launched it presents a menu 
 allowing users to select maps categorized by difficulty.
 
 * **Network Summary Dashboard:** Before running the simulation, a detailed summary dashboard displays 
 the network layout, hub locations, zone coordinates, zone types, and capacity parameters.
-
-* **CLI / Checker Mode:** When passed a map path as a CLI argument, extra visual banners are 
-suppressed, yielding clean turn-by-turn logs formatted strictly for automated evaluation scripts 
-(`checkers`).
-
 ---
 
 ## Example Input & Expected Output

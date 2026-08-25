@@ -22,9 +22,7 @@ class Drone:
 
     @is_delivered.setter
     def is_delivered(self, value: bool) -> None:
-        """Permite modificar directamente el estado de entrega."""
         self._is_delivered = value
 
     def __repr__(self) -> str:
-        """Representación legible del objeto Drone."""
         return f"Drone(name='{self.name}', zone='{self.current_zone.name}')"

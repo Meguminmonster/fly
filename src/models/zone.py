@@ -18,7 +18,7 @@ class Zone:
         self.x: int = x
         self.y: int = y
         self.zone_type: str = zone_type
-        # self.color: str = color
+        self.color: str = color
         self.is_start: bool = is_start
         self.is_end: bool = is_end
 
@@ -33,5 +33,4 @@ class Zone:
         return self.current_drones_count < self.max_drones
 
     def __repr__(self) -> str:
-        """Representación legible del objeto Zone."""
         return f"Zone(name='{self.name}', type='{self.zone_type}')"

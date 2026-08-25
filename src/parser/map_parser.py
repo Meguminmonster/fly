@@ -27,7 +27,6 @@ class MapParser:
         }
 
     def _parse_metadata(self, metadata_str: str) -> Dict[str, str]:
-        """Extrae metadatos de formato 'key=value'."""
         metadata: Dict[str, str] = {}
         if not metadata_str:
             return metadata
@@ -38,7 +37,6 @@ class MapParser:
         return metadata
 
     def _parse_zone(self, line: str, line_num: int) -> None:
-        """Parsea una zona y la añade al diccionario self.zones."""
         parts = line.split('[', 1)
         base = parts[0].strip()
         meta_str = (
@@ -117,7 +115,6 @@ class MapParser:
             self.end_hub = new_zone
 
     def _parse_connection(self, line: str, line_num: int) -> None:
-        """Parsea una conexión y verifica que no esté duplicada."""
         parts = line.split('[', 1)
         base = parts[0].strip()
         meta_str = (

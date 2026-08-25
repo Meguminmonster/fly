@@ -4,7 +4,6 @@ from src.simulation.pathfinder import PathFinder
 
 
 class SimulationEngine:
-    """Gestor del ciclo de vida y la ejecución de la simulación."""
 
     def __init__(self, network: Network, drones: List[Drone]) -> None:
         self.network: Network = network
@@ -21,7 +20,6 @@ class SimulationEngine:
         if not available_paths:
             return False
 
-        # Asignación balanceada de drones a las rutas encontradas
         path_loads = [0] * len(available_paths)
         for drone in self.drones:
             best_path_idx = min(

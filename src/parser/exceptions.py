@@ -23,30 +23,25 @@ class MapParserError(Exception):
 
 
 class InvalidMapSyntaxError(MapParserError):
-    """Se lanza cuando una línea no es el formato esperado."""
 
     pass
 
 
 class InvalidZoneTypeError(MapParserError):
-    """Se lanza cuando el tipo de zona no es válido."""
 
     pass
 
 
 class InvalidCoordinateError(MapParserError):
-    """Se lanza cuando las coordenadas no son números enteros."""
 
     pass
 
 
 class MissingHubError(MapParserError):
-    """Se lanza si falta el start_hub o el end_hub al finalizar la lectura."""
 
     pass
 
 
 class DuplicateConnectionError(MapParserError):
-    """Se lanza cuando se intenta crear una conexión que ya existe."""
 
     pass

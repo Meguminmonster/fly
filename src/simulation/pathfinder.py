@@ -10,7 +10,6 @@ class PathFinder:
         self.network: Network = network
 
     def _get_zone_cost(self, zone: Zone) -> float:
-        """Determina el coste ponderado para el cálculo de Dijkstra."""
         if zone.zone_type == "restricted":
             return 2.0
         if zone.zone_type == "priority":

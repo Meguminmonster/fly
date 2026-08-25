@@ -3,7 +3,6 @@ from src.models.zone import Zone
 
 
 class Connection:
-    """Representa una arista bidireccional entre dos zonas."""
 
     def __init__(
         self,
@@ -27,7 +26,6 @@ class Connection:
         return self.current_drones_in_transit < self.max_link_capacity
 
     def __repr__(self) -> str:
-        """Representación legible del objeto Connection."""
         return (
             f"Connection({self.zone1.name} <-> {self.zone2.name}, "
             f"capacity={self.max_link_capacity})"
